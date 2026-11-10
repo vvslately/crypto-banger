@@ -1,0 +1,11 @@
+{
+  "name": "solana-wallet-generator",
+  "version": "1.0.0",
+  "description": "Local Solana Wallet & Seed Phrase Generator with Automatic Folder Saving",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {}
+}
+

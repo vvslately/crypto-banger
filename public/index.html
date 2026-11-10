@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solana Wallet & Seed Phrase Generator</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="bg-glow glow-purple"></div>
+  <div class="bg-glow glow-green"></div>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="sol-logo">
+          <svg viewBox="0 0 397 311" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z" fill="url(#sol_grad_1)"/>
+            <path d="M64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z" fill="url(#sol_grad_2)"/>
+            <path d="M333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z" fill="url(#sol_grad_3)"/>
+            <defs>
+              <linearGradient id="sol_grad_1" x1="360.8" y1="351.4" x2="141.2" y2="-69.2" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#00FFA3"/>
+                <stop offset="1" stop-color="#DC1FFF"/>
+              </linearGradient>
+              <linearGradient id="sol_grad_2" x1="264.8" y1="401.6" x2="45.1" y2="-19.1" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#00FFA3"/>
+                <stop offset="1" stop-color="#DC1FFF"/>
+              </linearGradient>
+              <linearGradient id="sol_grad_3" x1="312.5" y1="376.6" x2="92.8" y2="-44.1" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#00FFA3"/>
+                <stop offset="1" stop-color="#DC1FFF"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <h1>Solana Wallet Generator</h1>
+          <p class="subtitle">สร้างกระเป๋า Solana (BIP39 + SLIP-0010) พร้อมบันทึกไฟล์ Seed Phrase (.txt) ลงโฟลเดอร์อัตโนมัติ</p>
+        </div>
+      </div>
+      <div class="folder-badge" id="folderBadge" title="โฟลเดอร์ที่บันทึกไฟล์">
+        <span class="dot"></span>
+        <span>Save Path: <code id="folderPathText">./wallets/</code></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-grid">
+    <!-- Left Column: Generator Controls & Results -->
+    <section class="panel generator-panel">
+      <div class="card control-card">
+        <div class="card-header">
+          <h2>ตั้งค่าการสร้างกระเป๋า (Generator Settings)</h2>
+          <span class="tag">Standard Path: m/44'/501'/0'/0'</span>
+        </div>
+
+        <form id="generateForm" class="controls-grid">
+          <div class="form-group">
+            <label for="walletCount">จำนวนกระเป๋าที่ต้องการ (1 - 100 ใบ)</label>
+            <div class="count-input-wrap">
+              <input type="number" id="walletCount" min="1" max="100" value="1" required />
+              <div class="quick-counts">
+                <button type="button" class="chip-btn active" data-count="1">1 ใบ</button>
+                <button type="button" class="chip-btn" data-count="5">5 ใบ</button>
+                <button type="button" class="chip-btn" data-count="10">10 ใบ</button>
+                <button type="button" class="chip-btn" data-count="25">25 ใบ</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>ความยาว Seed Phrase (BIP39)</label>
+            <div class="segmented-control">
+              <label class="segment active">
+                <input type="radio" name="wordCount" value="12" checked />
+                <span>12 คำ (มาตรฐาน)</span>
+              </label>
+              <label class="segment">
+                <input type="radio" name="wordCount" value="24" />
+                <span>24 คำ (ความปลอดภัยสูง)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="walletLabel">ชื่อไฟล์ / ป้ายกำกับ (Optional Prefix)</label>
+            <input type="text" id="walletLabel" placeholder="เช่น main, airdrop, sniper (ค่าเริ่มต้น: wallet)" maxlength="32" />
+          </div>
+
+          <div class="form-group" id="saveModeGroup">
+            <label for="saveMode">รูปแบบการบันทึกไฟล์ลงโฟลเดอร์ <code>wallets/</code></label>
+            <select id="saveMode">
+              <option value="both">แยกไฟล์ .txt รายกระเป๋า + ไฟล์รวม Batch (แนะนำ)</option>
+              <option value="combined">เฉพาะไฟล์รวม Batch .txt ไฟล์เดียว (เมื่อสร้างมากกว่า 1 ใบ)</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" id="generateBtn" class="btn-primary">
+              <span class="btn-icon">⚡</span>
+              <span id="generateBtnText">Generate & บันทึกไฟล์ .txt ลงโฟลเดอร์</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Status Banner -->
+      <div id="saveAlert" class="save-alert hidden">
+        <div class="save-alert-icon">✅</div>
+        <div class="save-alert-body">
+          <strong id="saveAlertTitle">สร้างกระเป๋าและบันทึกไฟล์เรียบร้อยแล้ว!</strong>
+          <p id="saveAlertDesc"></p>
+        </div>
+      </div>
+
+      <!-- Generated Wallets Output -->
+      <div id="resultsSection" class="results-section">
+        <div class="results-header">
+          <h3>กระเป๋าที่เพิ่งสร้างล่าสุด (<span id="resultCount">0</span>)</h3>
+          <div class="results-actions">
+            <button type="button" id="toggleSecretsBtn" class="btn-secondary btn-sm">👁️ แสดง/ซ่อน Private Key</button>
+          </div>
+        </div>
+        <div id="walletsContainer" class="wallets-list">
+          <div class="empty-state">
+            <div class="empty-icon">🔐</div>
+            <p>กดปุ่ม <strong>"Generate & บันทึกไฟล์ .txt ลงโฟลเดอร์"</strong> ด้านบนเพื่อเริ่มสร้างกระเป๋า Solana</p>
+            <small>ไฟล์ Seed Phrase (.txt) จะถูกบันทึกไว้ในโฟลเดอร์ <code>wallets/</code> ของโปรเจกต์โดยอัตโนมัติ</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Folder Explorer (wallets/*.txt) -->
+    <aside class="panel history-panel">
+      <div class="card folder-card">
+        <div class="card-header">
+          <div>
+            <h2>📂 ไฟล์ในโฟลเดอร์ <code>wallets/</code></h2>
+            <p class="card-sub">รายการไฟล์ Seed Phrase (.txt) ที่บันทึกไว้ในเครื่อง</p>
+          </div>
+          <button type="button" id="refreshFilesBtn" class="btn-icon-only" title="รีเฟรชรายการไฟล์">🔄</button>
+        </div>
+
+        <div id="filesList" class="files-list">
+          <div class="empty-files">ยังไม่มีไฟล์ที่บันทึกไว้</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Modal for viewing saved .txt file content -->
+  <div id="fileModal" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h3 id="modalFilename">wallet.txt</h3>
+          <small id="modalFilepath" class="muted-path"></small>
+        </div>
+        <div class="modal-header-actions">
+          <button type="button" id="copyModalContentBtn" class="btn-secondary btn-sm">📋 คัดลอกทั้งหมด</button>
+          <button type="button" id="closeModalBtn" class="btn-close">&times;</button>
+        </div>
+      </div>
+      <pre id="modalFileContent" class="file-preview"></pre>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden">คัดลอกลงคลิปบอร์ดแล้ว!</div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
+
