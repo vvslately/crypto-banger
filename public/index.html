@@ -3,173 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solana Wallet & Seed Phrase Generator</title>
+  <title>Solana Wallet Generator</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://cdn.jsdelivr.net/gh/lazywasabi/thai-web-fonts@7/fonts/LINESeedSansTH/LINESeedSansTH.css" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <div class="bg-glow glow-purple"></div>
-  <div class="bg-glow glow-green"></div>
+  <!-- Sticky Minimal Navbar -->
+  <header class="navbar-wrapper">
+    <nav class="navbar">
+      <a href="#" class="brand">
+        <span class="brand-logo">▲</span>
+        <span class="brand-name">SolGen</span>
+      </a>
 
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <div class="brand">
-        <div class="sol-logo">
-          <svg viewBox="0 0 397 311" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z" fill="url(#sol_grad_1)"/>
-            <path d="M64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z" fill="url(#sol_grad_2)"/>
-            <path d="M333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z" fill="url(#sol_grad_3)"/>
-            <defs>
-              <linearGradient id="sol_grad_1" x1="360.8" y1="351.4" x2="141.2" y2="-69.2" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#00FFA3"/>
-                <stop offset="1" stop-color="#DC1FFF"/>
-              </linearGradient>
-              <linearGradient id="sol_grad_2" x1="264.8" y1="401.6" x2="45.1" y2="-19.1" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#00FFA3"/>
-                <stop offset="1" stop-color="#DC1FFF"/>
-              </linearGradient>
-              <linearGradient id="sol_grad_3" x1="312.5" y1="376.6" x2="92.8" y2="-44.1" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#00FFA3"/>
-                <stop offset="1" stop-color="#DC1FFF"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-        <div>
-          <h1>Solana Wallet Generator</h1>
-          <p class="subtitle">สร้างกระเป๋า Solana (BIP39 + SLIP-0010) พร้อมบันทึกไฟล์ Seed Phrase (.txt) ลงโฟลเดอร์อัตโนมัติ</p>
-        </div>
+      <div class="nav-links">
+        <a href="#generatorSection">Generator</a>
+        <a href="#walletsSection">Wallets (<span id="resultCountNav">0</span>)</a>
+        <a href="#filesSection">Saved Files (<span id="filesCountNav">0</span>)</a>
       </div>
-      <div class="folder-badge" id="folderBadge" title="โฟลเดอร์ที่บันทึกไฟล์">
-        <span class="dot"></span>
-        <span>Save Path: <code id="folderPathText">./wallets/</code></span>
+
+      <div class="nav-actions">
+        <button type="button" id="toggleSecretsBtn" class="nav-link-btn">Show Private Keys</button>
+        <button type="button" id="quickGenerateBtn" class="btn-outline-pill">Generate Wallet</button>
       </div>
-    </div>
+    </nav>
   </header>
 
-  <main class="container main-grid">
-    <!-- Left Column: Generator Controls & Results -->
-    <section class="panel generator-panel">
-      <div class="card control-card">
-        <div class="card-header">
-          <h2>ตั้งค่าการสร้างกระเป๋า (Generator Settings)</h2>
-          <span class="tag">Standard Path: m/44'/501'/0'/0'</span>
+  <main class="container">
+    <!-- Hero Heading -->
+    <section class="hero" id="generatorSection">
+      <h1>Solana Wallet & Seed Phrase Generator</h1>
+      <p class="hero-sub">
+        สร้างกระเป๋า Solana มาตรฐาน BIP39 (<code>m/44'/501'/0'/0'</code>) พร้อมเลือกโฟลเดอร์ปลายทางสำหรับบันทึกไฟล์ Seed Phrase (<code>.txt</code>) ได้ตามต้องการ
+      </p>
+    </section>
+
+    <!-- Bento Grid Controls (3 Columns: 1fr - 2fr - 1fr) -->
+    <form id="generateForm" class="bento-grid">
+      <!-- Box 1: Count -->
+      <div class="bento-card hover-lift">
+        <span class="bento-label">จำนวนกระเป๋า</span>
+        <div class="bento-center">
+          <input type="number" id="walletCount" min="1" max="100" value="1" class="clean-number-input" required />
+          <div class="chip-row">
+            <button type="button" class="chip active" data-count="1">1</button>
+            <button type="button" class="chip" data-count="5">5</button>
+            <button type="button" class="chip" data-count="10">10</button>
+            <button type="button" class="chip" data-count="25">25</button>
+          </div>
         </div>
+        <span class="bento-foot">สร้างได้ 1–100 ใบต่อครั้ง</span>
+      </div>
 
-        <form id="generateForm" class="controls-grid">
-          <div class="form-group">
-            <label for="walletCount">จำนวนกระเป๋าที่ต้องการ (1 - 100 ใบ)</label>
-            <div class="count-input-wrap">
-              <input type="number" id="walletCount" min="1" max="100" value="1" required />
-              <div class="quick-counts">
-                <button type="button" class="chip-btn active" data-count="1">1 ใบ</button>
-                <button type="button" class="chip-btn" data-count="5">5 ใบ</button>
-                <button type="button" class="chip-btn" data-count="10">10 ใบ</button>
-                <button type="button" class="chip-btn" data-count="25">25 ใบ</button>
-              </div>
-            </div>
+      <!-- Box 2 (Wide Center): Save Path, File Prefix & Generate Action -->
+      <div class="bento-card bento-wide hover-lift">
+        <span class="bento-label">ตั้งค่าการบันทึกไฟล์ .txt</span>
+        <div class="bento-center wide-controls">
+          <div class="path-picker-group">
+            <input
+              type="text"
+              id="savePathInput"
+              placeholder="./wallets (โฟลเดอร์สำหรับบันทึกไฟล์)"
+              class="clean-text-input path-input"
+              title="ระบุ Path โฟลเดอร์ที่ต้องการบันทึกไฟล์ .txt"
+            />
+            <button type="button" id="browseFolderBtn" class="btn-browse" title="เลือกโฟลเดอร์ในเครื่อง">
+              📁 เลือกโฟลเดอร์
+            </button>
           </div>
 
-          <div class="form-group">
-            <label>ความยาว Seed Phrase (BIP39)</label>
-            <div class="segmented-control">
-              <label class="segment active">
-                <input type="radio" name="wordCount" value="12" checked />
-                <span>12 คำ (มาตรฐาน)</span>
-              </label>
-              <label class="segment">
-                <input type="radio" name="wordCount" value="24" />
-                <span>24 คำ (ความปลอดภัยสูง)</span>
-              </label>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="walletLabel">ชื่อไฟล์ / ป้ายกำกับ (Optional Prefix)</label>
-            <input type="text" id="walletLabel" placeholder="เช่น main, airdrop, sniper (ค่าเริ่มต้น: wallet)" maxlength="32" />
-          </div>
-
-          <div class="form-group" id="saveModeGroup">
-            <label for="saveMode">รูปแบบการบันทึกไฟล์ลงโฟลเดอร์ <code>wallets/</code></label>
-            <select id="saveMode">
-              <option value="both">แยกไฟล์ .txt รายกระเป๋า + ไฟล์รวม Batch (แนะนำ)</option>
-              <option value="combined">เฉพาะไฟล์รวม Batch .txt ไฟล์เดียว (เมื่อสร้างมากกว่า 1 ใบ)</option>
+          <div class="input-inline-group">
+            <input
+              type="text"
+              id="walletLabel"
+              placeholder="ชื่อนำหน้าไฟล์ เช่น main, airdrop"
+              maxlength="32"
+              class="clean-text-input"
+            />
+            <select id="saveMode" class="clean-select" title="รูปแบบการบันทึกไฟล์">
+              <option value="both">แยกไฟล์ + ไฟล์รวม</option>
+              <option value="combined">รวมไฟล์เดียว</option>
             </select>
           </div>
 
-          <div class="form-actions">
-            <button type="submit" id="generateBtn" class="btn-primary">
-              <span class="btn-icon">⚡</span>
-              <span id="generateBtnText">Generate & บันทึกไฟล์ .txt ลงโฟลเดอร์</span>
-            </button>
-          </div>
-        </form>
+          <button type="submit" id="generateBtn" class="btn-dark-main">
+            <span id="generateBtnText">Generate & Save .txt</span>
+          </button>
+        </div>
+        <span class="bento-foot" id="saveStatusText">พร้อมสร้างกระเป๋าและบันทึกไฟล์ลงโฟลเดอร์ที่เลือก</span>
       </div>
 
-      <!-- Status Banner -->
-      <div id="saveAlert" class="save-alert hidden">
-        <div class="save-alert-icon">✅</div>
-        <div class="save-alert-body">
-          <strong id="saveAlertTitle">สร้างกระเป๋าและบันทึกไฟล์เรียบร้อยแล้ว!</strong>
-          <p id="saveAlertDesc"></p>
-        </div>
-      </div>
-
-      <!-- Generated Wallets Output -->
-      <div id="resultsSection" class="results-section">
-        <div class="results-header">
-          <h3>กระเป๋าที่เพิ่งสร้างล่าสุด (<span id="resultCount">0</span>)</h3>
-          <div class="results-actions">
-            <button type="button" id="toggleSecretsBtn" class="btn-secondary btn-sm">👁️ แสดง/ซ่อน Private Key</button>
+      <!-- Box 3: Seed Phrase Words -->
+      <div class="bento-card hover-lift">
+        <span class="bento-label">รูปแบบ Seed Phrase</span>
+        <div class="bento-center">
+          <div class="word-toggle">
+            <label class="word-option active">
+              <input type="radio" name="wordCount" value="12" checked />
+              <span>12 Words</span>
+            </label>
+            <label class="word-option">
+              <input type="radio" name="wordCount" value="24" />
+              <span>24 Words</span>
+            </label>
           </div>
         </div>
-        <div id="walletsContainer" class="wallets-list">
-          <div class="empty-state">
-            <div class="empty-icon">🔐</div>
-            <p>กดปุ่ม <strong>"Generate & บันทึกไฟล์ .txt ลงโฟลเดอร์"</strong> ด้านบนเพื่อเริ่มสร้างกระเป๋า Solana</p>
-            <small>ไฟล์ Seed Phrase (.txt) จะถูกบันทึกไว้ในโฟลเดอร์ <code>wallets/</code> ของโปรเจกต์โดยอัตโนมัติ</small>
-          </div>
-        </div>
+        <span class="bento-foot">BIP39 Standard Mnemonic</span>
       </div>
-    </section>
+    </form>
 
-    <!-- Right Column: Folder Explorer (wallets/*.txt) -->
-    <aside class="panel history-panel">
-      <div class="card folder-card">
-        <div class="card-header">
+    <!-- Second Row Bento: Generated Wallets & Saved Folder Files -->
+    <section class="bento-row-bottom">
+      <!-- Generated Wallets Area -->
+      <div class="bento-box-large hover-lift-subtle" id="walletsSection">
+        <div class="section-bar">
           <div>
-            <h2>📂 ไฟล์ในโฟลเดอร์ <code>wallets/</code></h2>
-            <p class="card-sub">รายการไฟล์ Seed Phrase (.txt) ที่บันทึกไว้ในเครื่อง</p>
+            <h2>กระเป๋าที่สร้างล่าสุด (<span id="resultCount">0</span>)</h2>
+            <p class="section-sub">คลิก Copy เพื่อคัดลอก หรือกดเช็คยอดเงิน SOL / SPL Token</p>
           </div>
-          <button type="button" id="refreshFilesBtn" class="btn-icon-only" title="รีเฟรชรายการไฟล์">🔄</button>
+          <div class="wallet-toolbar">
+            <select id="networkSelect" class="clean-select-sm" title="เลือกเครือข่าย Solana">
+              <option value="mainnet">Mainnet</option>
+              <option value="devnet">Devnet</option>
+            </select>
+            <button type="button" id="checkAllBalancesBtn" class="btn-mini">เช็คยอดเงินทั้งหมด</button>
+          </div>
+        </div>
+
+        <div id="walletsContainer" class="wallets-list">
+          <div class="empty-minimal">
+            กดปุ่ม <strong>Generate & Save .txt</strong> ด้านบนเพื่อสร้างกระเป๋า Solana ใบแรก
+          </div>
+        </div>
+      </div>
+
+      <!-- Saved .txt Files in selected directory -->
+      <div class="bento-box-side hover-lift-subtle" id="filesSection">
+        <div class="section-bar">
+          <div class="folder-header-info">
+            <h2>ไฟล์ในโฟลเดอร์ที่เลือก</h2>
+            <p class="section-sub path-display" id="activeFolderDisplay">./wallets</p>
+          </div>
+          <button type="button" id="refreshFilesBtn" class="btn-mini" title="รีเฟรช">Refresh</button>
         </div>
 
         <div id="filesList" class="files-list">
-          <div class="empty-files">ยังไม่มีไฟล์ที่บันทึกไว้</div>
+          <div class="empty-minimal">ยังไม่มีไฟล์ที่บันทึกไว้</div>
         </div>
       </div>
-    </aside>
+    </section>
   </main>
 
-  <!-- Modal for viewing saved .txt file content -->
+  <!-- Modal for viewing saved .txt file -->
   <div id="fileModal" class="modal-backdrop hidden">
-    <div class="modal-content">
+    <div class="modal-card">
       <div class="modal-header">
         <div>
           <h3 id="modalFilename">wallet.txt</h3>
-          <small id="modalFilepath" class="muted-path"></small>
+          <p id="modalFilepath" class="modal-path"></p>
         </div>
-        <div class="modal-header-actions">
-          <button type="button" id="copyModalContentBtn" class="btn-secondary btn-sm">📋 คัดลอกทั้งหมด</button>
-          <button type="button" id="closeModalBtn" class="btn-close">&times;</button>
+        <div class="modal-actions">
+          <button type="button" id="checkModalBalanceBtn" class="btn-outline-pill btn-sm hidden">เช็คยอดเงิน</button>
+          <button type="button" id="copyModalContentBtn" class="btn-outline-pill btn-sm">Copy All</button>
+          <button type="button" id="closeModalBtn" class="btn-close" aria-label="Close">&times;</button>
         </div>
       </div>
-      <pre id="modalFileContent" class="file-preview"></pre>
+      <div id="modalBalancesBox" class="modal-balances-box hidden"></div>
+      <pre id="modalFileContent" class="modal-pre"></pre>
     </div>
   </div>
 
-  <div id="toast" class="toast hidden">คัดลอกลงคลิปบอร์ดแล้ว!</div>
+  <div id="toast" class="toast hidden">Copied to clipboard</div>
 
   <script src="/app.js"></script>
 </body>
 </html>
-
